@@ -7,6 +7,8 @@
 #include "DynamicMeshBuilder.h"
 #include "RenderingThread.h"
 
+#include "Runtime/Launch/Resources/Version.h"
+
 typedef TArray<FDynamicMeshVertex, TAlignedHeapAllocator<VERTEXBUFFER_ALIGNMENT>> FMeshVertexArray;
 typedef TResourceArray<FDynamicMeshVertex, VERTEXBUFFER_ALIGNMENT> FMeshVertexResourceArray;
 
@@ -176,9 +178,17 @@ public:
 class FMeshVertexFactory : public FLocalVertexFactory
 {
 public:
+#if ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 19
+	FMeshVertexFactory(ERHIFeatureLevel::Type InFeatureLevel)
+		: FLocalVertexFactory(InFeatureLevel, "FMeshVertexFactory")
+	{
+		bSupportsManualVertexFetch = false;
+	}
+#else
 	FMeshVertexFactory()
 	{
 	}
+#endif
 
 	void Init_RenderThread(const FVertexBuffer* VertexBuffer)
 	{
@@ -240,6 +250,9 @@ public:
 		  BufferUsage(InBufferUsage),
 		  VertexBuffer(Vertices, BufferUsage),
 		  IndexBuffer(Indices, BufferUsage),
+#if ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 19
+		  VertexFactory(ERHIFeatureLevel::SM5),
+#endif
 		  Material(Component->GetMaterial(0)),
 		  MaterialRelevance(Component->GetMaterialRelevance(GetScene().GetFeatureLevel()))
 	{

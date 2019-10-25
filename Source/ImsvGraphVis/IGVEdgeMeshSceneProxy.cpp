@@ -7,6 +7,8 @@
 #include "IGVGraphActor.h"
 #include "IGVLog.h"
 
+#include "Runtime/Launch/Resources/Version.h"
+
 FIGVEdgeMeshVertexBuffer::FIGVEdgeMeshVertexBuffer(int32 const InNumElements)
 	: NumElements(InNumElements)
 {
@@ -87,6 +89,9 @@ FIGVEdgeMeshSceneProxy::FIGVEdgeMeshSceneProxy(UIGVEdgeMeshComponent* const Comp
 
 	  VertexBuffer(Component->NumMeshVertices),
 	  IndexBuffer(Component->MeshIndices),
+#if ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 19
+	  VertexFactory(ERHIFeatureLevel::SM5),
+#endif
 
 	  Material(Component->GetMaterial(0)),
 	  MaterialRelevance(Component->GetMaterialRelevance(GetScene().GetFeatureLevel())),
@@ -218,6 +223,13 @@ FPrimitiveViewRelevance FIGVEdgeMeshSceneProxy::GetViewRelevance(const FSceneVie
 	MaterialRelevance.SetPrimitiveViewRelevance(Result);
 	return Result;
 }
+
+#if ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 19
+SIZE_T FIGVEdgeMeshSceneProxy::GetTypeHash() const {
+	static size_t UniquePointer;
+	return reinterpret_cast<size_t>(&UniquePointer);
+}
+#endif
 
 void FIGVEdgeMeshSceneProxy::SetMesh(FMeshBatch& Mesh, bool const bWireframe) const
 {

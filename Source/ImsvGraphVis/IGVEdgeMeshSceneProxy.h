@@ -8,6 +8,8 @@
 #include "IGVEdgeMeshData.h"
 #include "IGVEdgeSplineData.h"
 
+#include "Runtime/Launch/Resources/Version.h"
+
 class IMSVGRAPHVIS_API FIGVEdgeMeshVertexBuffer : public FVertexBuffer
 {
 public:
@@ -19,6 +21,15 @@ public:
 
 class IMSVGRAPHVIS_API FIGVEdgeMeshVertexFactory : public FLocalVertexFactory
 {
+#if ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 19
+public:
+	FIGVEdgeMeshVertexFactory(ERHIFeatureLevel::Type InFeatureLevel)
+		: FLocalVertexFactory(InFeatureLevel, "FIGVEdgeMeshVertexFactory")
+	{
+		bSupportsManualVertexFetch = false;
+	}
+#endif
+
 public:
 	void Init(FVertexBuffer* VertexBuffer);
 	void Init_RenderThread(const FVertexBuffer* VertexBuffer);
@@ -78,6 +89,10 @@ public:
 										class FMeshElementCollector& Collector) const override;
 	virtual void DrawStaticElements(FStaticPrimitiveDrawInterface* PDI) override;
 	virtual FPrimitiveViewRelevance GetViewRelevance(const FSceneView* View) const override;
+
+#if ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 19
+	virtual SIZE_T GetTypeHash() const override;
+#endif
 
 	void SetMesh(FMeshBatch& Mesh, bool const bWireframe) const;
 	int32 SetMeshBatchElements(FMeshBatch& Mesh, bool const bWireframe) const;

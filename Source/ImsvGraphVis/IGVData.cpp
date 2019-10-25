@@ -12,9 +12,15 @@
 #include "IGVLog.h"
 #include "IGVNodeActor.h"
 
+#include "Runtime/Launch/Resources/Version.h"
+
 FString UIGVData::DefaultDataDirPath()
 {
+#if ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 19
+	return FPaths::Combine(*FPaths::ProjectSavedDir(), TEXT("Data/Graph/"));
+#else
 	return FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Data/Graph/"));
+#endif
 }
 
 void UIGVData::OpenFile(AIGVGraphActor* const GraphActor)
