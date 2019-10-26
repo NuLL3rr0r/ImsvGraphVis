@@ -10,9 +10,15 @@
 
 // DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(uint32, Degree)
 BEGIN_UNIFORM_BUFFER_STRUCT(FSplineComputeShaderUniformParameters, )
+#if ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION >= 20
+UNIFORM_MEMBER(float, WorldSize)
+UNIFORM_MEMBER(float, Width)
+UNIFORM_MEMBER(uint32, NumSides)
+#else
 DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, WorldSize)
 DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, Width)
 DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(uint32, NumSides)
+#endif
 END_UNIFORM_BUFFER_STRUCT(FSplineComputeShaderUniformParameters)
 
 typedef TUniformBufferRef<FSplineComputeShaderUniformParameters>
